@@ -9,13 +9,13 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 import pickle
 
-stop_words = set(stopwords.words('english'))
+stopwords = set(stopwords.words('english'))
 stemmer = SnowballStemmer("english")
 
 
 def prepare(text):
     text = text.translate(str.maketrans('', '', string.punctuation))
-    tokens = [word for word in text.split() if word.lower() not in stop_words]
+    tokens = [word for word in text.split() if word.lower() not in stopwords]
     tokens = [stemmer.stem(word) for word in tokens]
     return ' '.join(tokens)
 
@@ -33,8 +33,8 @@ def cli():
 def train(data, test, split, model):
     df = pd.read_csv(data)
     df['text'] = df['text'].apply(prepare)
-    vectorizer = TfidfVectorizer()
-    x = vectorizer.fit_transform(df['text'])
+    bow = TfidfVectorizer()
+    x = bow.fit_transform(df['text'])
     y = df['rating']
 
     if test:
@@ -42,7 +42,7 @@ def train(data, test, split, model):
         y_train = y
         test_df = pd.read_csv(test)
         test_df['text'] = test_df['text'].apply(prepare)
-        x_test = vectorizer.transform(test_df['text'])
+        x_test = bow.transform(test_df['text'])
         y_test = test_df['rating']
     elif split:
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=split, random_state=42)
@@ -57,7 +57,7 @@ def train(data, test, split, model):
         print(classification_report(y_test, y_pred))
 
     with open(model, 'wb') as fl:
-        pickle.dump((vectorizer, log_reg), fl)
+        pickle.dump((bow, log_reg), fl)
 
 
 @click.command()
