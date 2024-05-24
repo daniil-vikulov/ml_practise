@@ -2,12 +2,10 @@ import asyncio
 import pickle
 import string
 
-import nltk
-import pandas as pd
 from aiogram.types import Message
 from aiogram.filters import CommandStart
 
-from aiogram import Bot, Dispatcher, F
+from aiogram import Bot, Dispatcher
 from nltk import SnowballStemmer
 from nltk.corpus import stopwords
 
